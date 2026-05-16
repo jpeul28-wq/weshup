@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weshup ↑ — Ton avenir, on gère ensemble</title>
+<meta name="description" content="Weshup, l'IA bienveillante pour les jeunes. Jobs, études, avenir — on gère tout ensemble.">
+<meta property="og:title" content="Weshup ↑">
+<meta property="og:description" content="L'IA bienveillante pour les jeunes. Jobs, études, avenir.">
+<meta property="og:url" content="https://weshup.app">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FF6B35'/><text y='.9em' font-size='60' x='50%' text-anchor='middle' font-family='monospace' font-weight='900' fill='white'>W↑</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060608;--s1:#0D0D16;--s2:#14141F;--s3:#1C1C2A;
+  --border:#ffffff0F;--border2:#ffffff1A;
+  --w:#FF6B35;--w2:#FFB800;--w3:#00E5A0;--w4:#7C3AED;
+  --text:#F5F4FF;--muted:#7B7A9A;--soft:#C4C3DC;
+  --r:14px;
+}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;height:100vh;overflow:hidden;position:relative}
+.glow{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;opacity:.08}
+.g1{width:500px;height:500px;background:var(--w);top:-150px;left:-100px}
+.g2{width:350px;height:350px;background:var(--w4);bottom:-100px;right:-80px}
+.g3{width:200px;height:200px;background:var(--w3);top:40%;left:30%;opacity:.05}
+#app{display:flex;height:100vh;position:relative;z-index:1}
+
+/* SIDEBAR */
+#sidebar{width:68px;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:4px;flex-shrink:0;transition:width .3s cubic-bezier(.4,0,.2,1)}
+#sidebar.open{width:220px;align-items:flex-start;padding:14px 10px}
+.logo-wrap{display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px;border-radius:12px;transition:background .2s;width:100%}
+.logo-wrap:hover{background:var(--s2)}
+.logo-mark{width:40px;height:40px;border-radius:11px;background:var(--w);display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-weight:900;font-size:13px;color:#fff;flex-shrink:0;letter-spacing:-1px}
+.logo-name{font-family:'Unbounded',sans-serif;font-weight:700;font-size:15px;white-space:nowrap;opacity:0;transition:opacity .15s;color:var(--text)}
+#sidebar.open .logo-name{opacity:1}
+.sb-sep{width:30px;height:1px;background:var(--border);margin:8px 0;transition:width .3s}
+#sidebar.open .sb-sep{width:100%}
+.nav-row{display:flex;align-items:center;gap:10px;width:100%;border-radius:10px;transition:background .2s;cursor:pointer;padding:2px}
+.nav-row:hover .nav-ico{background:var(--s3)}
+.nav-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:background .2s}
+.nav-row.active .nav-ico{background:var(--s2);box-shadow:inset 0 0 0 1px var(--border2)}
+.nav-lbl{font-size:13px;font-weight:500;color:var(--muted);white-space:nowrap;opacity:0;transition:opacity .15s}
+#sidebar.open .nav-lbl{opacity:1}
+.nav-row.active .nav-lbl{color:var(--text)}
+.nav-pip{width:5px;height:5px;border-radius:50%;background:var(--w3);margin-left:auto;flex-shrink:0;opacity:0;transition:opacity .15s}
+#sidebar.open .nav-pip{opacity:1}
+.nav-row:not(.has-pip) .nav-pip{visibility:hidden}
+.xp-zone{margin-top:auto;width:100%}
+.xp-row{display:flex;align-items:center;gap:10px;padding:4px;border-radius:10px;background:var(--s2);border:1px solid var(--border)}
+.xp-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--w),var(--w2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0}
+.xp-info{flex:1;min-width:0;opacity:0;transition:opacity .15s}
+#sidebar.open .xp-info{opacity:1}
+.xp-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xp-bar-wrap{height:3px;background:var(--s3);border-radius:3px;margin-top:5px;overflow:hidden}
+.xp-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--w),var(--w2));transition:width .8s ease}
+.xp-pts{font-size:10px;color:var(--muted);margin-top:3px}
+
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{height:52px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 18px;flex-shrink:0}
+.pillar-tag{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;font-family:'Space Grotesk',sans-serif;letter-spacing:.3px;cursor:pointer;transition:all .2s}
+.pt-job{background:#2A1505;color:#FF6B35;border:1px solid #FF6B3530}
+.pt-study{background:#1A0D2E;color:#A78BFA;border:1px solid #A78BFA30}
+.pt-future{background:#00241A;color:#00E5A0;border:1px solid #00E5A030}
+.streak{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:var(--s2);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--w2)}
+.lang-pills{display:flex;gap:4px;margin-left:auto}
+.lpill{padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:all .2s}
+.lpill.active{background:var(--w);border-color:var(--w);color:#fff}
+
+/* SCREENS */
+.screen{display:none;flex:1;flex-direction:column;overflow:hidden}
+.screen.on{display:flex}
+
+/* ONBOARD */
+#sc-ob{align-items:center;justify-content:center;padding:24px}
+.ob-wrap{max-width:440px;width:100%;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}
+.ob-step{display:none;flex-direction:column;align-items:center;gap:18px;width:100%;animation:fadeUp .35s ease}
+.ob-step.on{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.ob-big{font-family:'Unbounded',sans-serif;font-size:42px;font-weight:900;line-height:1}
+.weshup-gradient{background:linear-gradient(135deg,var(--w),var(--w2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ob-title{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;line-height:1.25}
+.ob-sub{font-size:14px;color:var(--muted);line-height:1.7;max-width:340px}
+.ob-input{width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--border2);background:var(--s2);color:var(--text);font-size:15px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s}
+.ob-input:focus{border-color:var(--w)}
+.ob-input::placeholder{color:var(--muted)}
+.ob-choices{display:flex;flex-direction:column;gap:8px;width:100%}
+.ob-choice{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:12px;border:1px solid var(--border);background:var(--s2);color:var(--soft);font-size:13px;font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:all .2s;text-align:left}
+.ob-choice:hover{border-color:var(--w);background:var(--s3)}
+.ob-choice.sel{border-color:var(--w);background:#2A1505;color:var(--w)}
+.oc-icon{font-size:20px;width:26px;text-align:center;flex-shrink:0}
+.oc-text strong{display:block;font-size:13px;font-weight:600;margin-bottom:2px}
+.oc-text small{font-size:11px;color:var(--muted)}
+.ob-btn{padding:13px 28px;border-radius:12px;border:none;background:var(--w);color:#fff;font-size:14px;font-weight:700;font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:all .2s;width:100%;max-width:260px;letter-spacing:.3px}
+.ob-btn:hover{background:#ff8555;transform:translateY(-1px)}
+.ob-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.ob-dots{display:flex;gap:6px;margin-top:4px}
+.od{width:8px;height:8px;border-radius:50%;background:var(--s3);transition:all .3s}
+.od.on{background:var(--w);width:20px;border-radius:4px}
+.bonus-pill{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:12px;background:#2A1505;border:1px solid #FF6B3530;font-size:13px;color:var(--w);font-weight:600}
+
+/* CHAT */
+#sc-chat{flex-direction:column}
+#msgs{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+#msgs::-webkit-scrollbar{width:3px}
+#msgs::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.msg{display:flex;flex-direction:column;gap:4px;animation:msgIn .3s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg-b{align-items:flex-start}.msg-u{align-items:flex-end}
+.msg-row{display:flex;align-items:flex-end;gap:8px}
+.bot-av{width:30px;height:30px;border-radius:9px;background:var(--w);display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-weight:900;font-size:9px;color:#fff;flex-shrink:0;letter-spacing:-1px}
+.bub{padding:11px 15px;border-radius:15px;font-size:13px;line-height:1.65;max-width:66%}
+.bub-b{background:var(--s2);border:1px solid var(--border);border-bottom-left-radius:4px;color:var(--text)}
+.bub-u{background:var(--w);border-bottom-right-radius:4px;color:#fff}
+.msg-meta{font-size:10px;color:var(--muted);padding:0 5px}
+.typing-bub{display:flex;align-items:center;gap:4px;padding:13px 15px}
+.td{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:td .9s ease infinite}
+.td:nth-child(2){animation-delay:.15s}.td:nth-child(3){animation-delay:.3s}
+@keyframes td{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.sugg-row{padding:8px 20px;display:flex;gap:7px;flex-wrap:wrap;flex-shrink:0}
+.sugg{padding:6px 13px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap}
+.sugg:hover{border-color:var(--w);color:var(--w);background:#2A150520}
+.input-zone{padding:12px 18px 16px;border-top:1px solid var(--border);flex-shrink:0}
+.input-wrap{display:flex;gap:8px;align-items:flex-end;background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:9px 9px 9px 14px;transition:border-color .2s}
+.input-wrap:focus-within{border-color:var(--w)}
+#msgIn{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:13px;font-family:'Space Grotesk',sans-serif;resize:none;max-height:100px;line-height:1.5}
+#msgIn::placeholder{color:var(--muted)}
+.send{width:36px;height:36px;border-radius:9px;border:none;background:var(--w);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .2s}
+.send:hover{background:#ff8555;transform:scale(1.06)}
+.send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.input-foot{display:flex;justify-content:space-between;margin-top:6px;padding:0 2px}
+.input-hint{font-size:10px;color:var(--muted)}
+
+/* DASHBOARD */
+#sc-dash{overflow-y:auto;padding:20px;gap:16px}
+.dash-h{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat-c{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:5px}
+.stat-ico{font-size:18px;margin-bottom:2px}
+.stat-val{font-size:24px;font-weight:700;font-family:'Unbounded',sans-serif}
+.stat-lbl{font-size:11px;color:var(--muted)}
+.section-h{font-size:13px;font-weight:600;color:var(--soft);text-transform:uppercase;letter-spacing:.8px;margin-top:4px}
+.badges-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.badge-c{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px;background:var(--s2);border:1px solid var(--border);border-radius:11px;min-width:72px}
+.badge-c.locked{opacity:.25;filter:grayscale(1)}
+.badge-c .bi{font-size:22px}
+.badge-c .bn{font-size:10px;color:var(--muted);text-align:center;line-height:1.3}
+.mission-c{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--s2);border:1px solid var(--border);border-radius:11px}
+.mission-c.done{opacity:.5}
+.mi-icon{width:34px;height:34px;background:var(--s3);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.mi-title{font-size:12px;font-weight:500;flex:1}
+.mi-xp{font-size:11px;color:var(--w2);font-weight:600}
+.mi-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;margin-left:auto;flex-shrink:0}
+.mission-c.done .mi-check{background:var(--w3);border-color:var(--w3);color:#000}
+.prog-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border:1px solid var(--border);border-radius:10px}
+.prog-lbl{flex:1;font-size:12px}
+.prog-bar{flex:2;height:5px;background:var(--s3);border-radius:5px;overflow:hidden}
+.prog-fill{height:100%;border-radius:5px;transition:width 1s ease}
+.prog-pct{font-size:11px;color:var(--muted);min-width:28px;text-align:right}
+.ach-pop{position:fixed;bottom:90px;right:20px;background:var(--s2);border:1px solid var(--border2);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:999;animation:achIn .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 8px 32px #00000080}
+@keyframes achIn{from{opacity:0;transform:translateY(16px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+.ach-ico{font-size:26px}
+.ach-t1{font-size:10px;color:var(--w2);font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+.ach-t2{font-size:13px;font-weight:600}
+
+@media(max-width:600px){
+  #sidebar{width:0;padding:0;border:none}
+  #sidebar.open{width:200px;padding:14px 10px;border-right:1px solid var(--border)}
+  .topbar{padding:0 12px}
+  #msgs{padding:14px}
+  .input-zone{padding:10px 12px 14px}
+  .bub{max-width:85%}
+}
+</style>
+</head>
+<body>
+<div class="glow g1"></div>
+<div class="glow g2"></div>
+<div class="glow g3"></div>
+
+<div id="app">
+  <div id="sidebar">
+    <div class="logo-wrap" onclick="toggleSb()">
+      <div class="logo-mark">W↑</div>
+      <span class="logo-name">Weshup</span>
+    </div>
+    <div class="sb-sep"></div>
+    <div class="nav-row active" onclick="showScreen('chat')" id="nr-chat">
+      <div class="nav-ico">💬</div>
+      <span class="nav-lbl">Mon chat</span>
+    </div>
+    <div class="nav-row has-pip" onclick="showScreen('dash')" id="nr-dash">
+      <div class="nav-ico">🏆</div>
+      <span class="nav-lbl">Ma progression</span>
+      <div class="nav-pip"></div>
+    </div>
+    <div class="nav-row" onclick="rotatePillar()" id="nr-pillar">
+      <div class="nav-ico">🔄</div>
+      <span class="nav-lbl">Changer de sujet</span>
+    </div>
+    <div class="sb-sep"></div>
+    <div class="xp-zone">
+      <div class="xp-row">
+        <div class="xp-av" id="xp-av">?</div>
+        <div class="xp-info">
+          <div class="xp-name" id="xp-name">Invité·e</div>
+          <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xp-bar" style="width:5%"></div></div>
+          <div class="xp-pts" id="xp-pts">Niv.1 · 5 XP</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main">
+    <div class="topbar">
+      <span class="pillar-tag pt-job" id="ptag" onclick="rotatePillar()">💼 Jobs & Stages</span>
+      <span class="streak" id="streak-el">🔥 0 jour</span>
+      <div class="lang-pills" style="margin-left:auto">
+        <button class="lpill active" onclick="setLang('fr')">🇫🇷</button>
+        <button class="lpill" onclick="setLang('en')">🇬🇧</button>
+      </div>
+    </div>
+
+    <div class="screen on" id="sc-ob">
+      <div class="ob-wrap">
+        <div class="ob-step on" id="ob0">
+          <div class="ob-big"><span class="weshup-gradient">Weshup</span> ↑</div>
+          <div class="ob-sub">L'IA bienveillante pour les jeunes. Jobs, études, avenir — on gère tout ensemble.</div>
+          <button class="ob-btn" onclick="goOb(1)">Wesh, c'est parti ! 🚀</button>
+          <div class="ob-dots"><div class="od on"></div><div class="od"></div><div class="od"></div><div class="od"></div></div>
+        </div>
+        <div class="ob-step" id="ob1">
+          <div class="ob-title">Tu t'appelles comment ?</div>
+          <div class="ob-sub">Pour que Weshup te parle vraiment — pas comme un formulaire.</div>
+          <input class="ob-input" id="ob-name" placeholder="Ton prénom..." oninput="checkName()"/>
+          <button class="ob-btn" id="ob1b" onclick="goOb(2)" disabled>Continuer →</button>
+          <div class="ob-dots"><div class="od on"></div><div class="od on"></div><div class="od"></div><div class="od"></div></div>
+        </div>
+        <div class="ob-step" id="ob2">
+          <div class="ob-title">Par où tu commences ?</div>
+          <div class="ob-sub">Tu peux changer à tout moment.</div>
+          <div class="ob-choices">
+            <div class="ob-choice" onclick="selPillar('job',this)"><span class="oc-icon">💼</span><div class="oc-text"><strong>Jobs & Stages</strong><small>Job d'été, alternance, premier emploi…</small></div></div>
+            <div class="ob-choice" onclick="selPillar('study',this)"><span class="oc-icon">🎓</span><div class="oc-text"><strong>Études & Orientation</strong><small>Choisir sa voie, filières, Parcoursup…</small></div></div>
+            <div class="ob-choice" onclick="selPillar('future',this)"><span class="oc-icon">🌟</span><div class="oc-text"><strong>Mon Avenir</strong><small>Se rassurer, trouver sa passion, oser…</small></div></div>
+          </div>
+          <button class="ob-btn" id="ob2b" onclick="goOb(3)" disabled>Continuer →</button>
+          <div class="ob-dots"><div class="od on"></div><div class="od on"></div><div class="od on"></div><div class="od"></div></div>
+        </div>
+        <div class="ob-step" id="ob3">
+          <div class="ob-big">🎉</div>
+          <div class="ob-title" id="ob3t"></div>
+          <div class="ob-sub">Tu gagnes 50 XP juste pour avoir commencé. C'est ça l'esprit Weshup.</div>
+          <div class="bonus-pill">⭐ +50 XP — Bienvenue dans Weshup !</div>
+          <button class="ob-btn" onclick="finishOb()">Lancer ma conversation ↑</button>
+          <div class="ob-dots"><div class="od on"></div><div class="od on"></div><div class="od on"></div><div class="od on"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="sc-chat">
+      <div id="msgs"></div>
+      <div class="sugg-row" id="sugg-row"></div>
+      <div class="input-zone">
+        <div class="input-wrap">
+          <textarea id="msgIn" placeholder="Wesh, dis-moi tout…" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="send" id="sendBtn" onclick="sendMsg()">↑</button>
+        </div>
+        <div class="input-foot">
+          <span class="input-hint">Entrée pour envoyer · Shift+Entrée pour saut de ligne</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="sc-dash">
+      <div class="dash-h">Ma progression</div>
+      <div class="stat-grid" id="stat-grid"></div>
+      <div class="section-h">Mes badges</div>
+      <div class="badges-wrap" id="badges-wrap"></div>
+      <div class="section-h">Missions du jour</div>
+      <div style="display:flex;flex-direction:column;gap:7px" id="missions-wrap"></div>
+      <div class="section-h">Mes thèmes</div>
+      <div style="display:flex;flex-direction:column;gap:7px" id="prog-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+
+let lang='fr',pillar='job',userName='',sbOpen=false;
+let xp=50,streak=1,msgCount=0;
+let messages=[],isLoading=false;
+let missions={first:false,three:false,pillar:false};
+let unlockedBadges=['welcome'];
+let visitedPillars=new Set();
+let selPillarOb='';
+
+const BADGES=[
+  {id:'welcome',icon:'🌟',name:{fr:'Bienvenue',en:'Welcome'}},
+  {id:'first_msg',icon:'💬',name:{fr:'Premier mot',en:'First words'}},
+  {id:'streak3',icon:'🔥',name:{fr:'En feu',en:'On Fire'}},
+  {id:'explorer',icon:'🧭',name:{fr:'Explorateur',en:'Explorer'}},
+  {id:'cv_hero',icon:'📄',name:{fr:'CV Hero',en:'CV Hero'}},
+  {id:'motivated',icon:'💪',name:{fr:'Motivé·e',en:'Motivated'}},
+];
+
+const T={
+  fr:{
+    pt:{job:'💼 Jobs & Stages',study:'🎓 Études',future:'🌟 Mon Avenir'},
+    streak:'🔥 {n} jour{s}',
+    sugg:{
+      job:['💼 Je cherche un job d\'été','📄 Aide-moi pour mon CV','🎯 Quels secteurs recrutent ?','🤝 Préparer un entretien'],
+      study:['🎓 J\'hésite entre des filières','📚 C\'est quoi Parcoursup ?','🔄 Changer d\'orientation','💡 Quel métier me correspond ?'],
+      future:['🌱 Je sais pas quoi faire de ma vie','✨ Comment trouver ma passion ?','😰 J\'ai peur de l\'avenir','💭 J\'ai bien choisi ?']
+    },
+    firstMsg:{
+      job:n=>`Wesh ${n} 👋 Trop content de te voir ici ! Tu cherches un job d'été, un stage ou une alternance ? Et t'as un secteur en tête ? On va trouver quelque chose ensemble 💪`,
+      study:n=>`Wesh ${n} 🎓 L'orientation c'est souvent le casse-tête numéro un. Mais t'inquiète, t'es pas tout·e seul·e ! Tu es en quelle classe, et qu'est-ce qui t'attire comme domaine ?`,
+      future:n=>`Wesh ${n} 🌟 Poser des questions sur son avenir c'est déjà courageux. Alors dis-moi — qu'est-ce qui t'occupe la tête en ce moment ?`
+    },
+    stats:[{l:'XP Total',i:'⭐'},{l:'Jours consécutifs',i:'🔥'},{l:'Messages',i:'💬'},{l:'Niveau',i:'🏅'}],
+    missions:[{id:'first',t:'Envoyer ton premier message',xp:20},{id:'three',t:'Écrire 3 messages aujourd\'hui',xp:30},{id:'pillar',t:'Explorer un nouveau thème',xp:25}],
+    ach_badge:'Badge débloqué !',ach_xp:'XP gagné !'
+  },
+  en:{
+    pt:{job:'💼 Jobs & Internships',study:'🎓 Studies',future:'🌟 My Future'},
+    streak:'🔥 {n} day{s}',
+    sugg:{
+      job:['💼 I need a summer job','📄 Help with my CV','🎯 Which sectors are hiring?','🤝 Prep for an interview'],
+      study:['🎓 I can\'t choose a course','📚 How does clearing work?','🔄 Changing direction','💡 What career suits me?'],
+      future:['🌱 I don\'t know what I want','✨ How do I find my passion?','😰 I\'m scared about the future','💭 Did I make the right choice?']
+    },
+    firstMsg:{
+      job:n=>`Hey ${n} 👋 So glad you're here! Looking for a summer job, internship, or apprenticeship? Any sector in mind? Let's figure it out together 💪`,
+      study:n=>`Hey ${n} 🎓 Choosing your path can feel overwhelming — but you don't have to do it alone! What year are you in and what interests you?`,
+      future:n=>`Hey ${n} 🌟 Thinking about your future takes real courage. So tell me — what's been on your mind lately?`
+    },
+    stats:[{l:'Total XP',i:'⭐'},{l:'Day streak',i:'🔥'},{l:'Messages',i:'💬'},{l:'Level',i:'🏅'}],
+    missions:[{id:'first',t:'Send your first message',xp:20},{id:'three',t:'Write 3 messages today',xp:30},{id:'pillar',t:'Explore a new topic',xp:25}],
+    ach_badge:'Badge unlocked!',ach_xp:'XP earned!'
+  }
+};
+
+const SYS={
+  fr:{
+    job:()=>`Tu es Weshup, l'IA bienveillante et pote des jeunes de 15-25 ans. Tu parles à ${userName}. Style pair-à-pair chaleureux, phrases courtes, 1-2 emojis max. Tu aides pour jobs d'été, stages, alternances, CV, lettres de motivation et entretiens. Toujours valoriser l'effort. Finir par une question ou action concrète. 180 mots max.`,
+    study:()=>`Tu es Weshup, l'IA bienveillante des jeunes 15-25 ans. Tu parles à ${userName}. Chaleureux, encourageant, jamais condescendant. Tu aides pour orientation, Parcoursup, filières, métiers. Terminer sur une piste concrète. 180 mots max.`,
+    future:()=>`Tu es Weshup, confident IA bienveillant pour jeunes 15-25 ans. Tu parles à ${userName}. Empathique avant tout — écoute d'abord. Aide à identifier valeurs, passions, déconstruire peurs. Si détresse sérieuse, recommande doucement des ressources pro. 180 mots max.`
+  },
+  en:{
+    job:()=>`You are Weshup, a caring AI for young people 15-25. Talking to ${userName}. Warm peer tone, short sentences, 1-2 emojis max. Help with jobs, internships, CV, interviews. Always encourage. End with a question or action. Max 180 words.`,
+    study:()=>`You are Weshup, a caring AI for young people 15-25. Talking to ${userName}. Warm, encouraging. Help with course choices, careers. Always end with a concrete suggestion. Max 180 words.`,
+    future:()=>`You are Weshup, a caring AI for young people 15-25. Talking to ${userName}. Empathetic first. Help identify values, passions, overcome fears. If serious distress, gently recommend professional resources. Max 180 words.`
+  }
+};
+
+function toggleSb(){sbOpen=!sbOpen;document.getElementById('sidebar').classList.toggle('open',sbOpen)}
+function setLang(l){lang=l;document.querySelectorAll('.lpill').forEach((b,i)=>b.classList.toggle('active',(i===0&&l==='fr')||(i===1&&l==='en')));updatePillarTag();updateStreak();updateSuggs()}
+function updatePillarTag(){const t=T[lang];const el=document.getElementById('ptag');el.textContent=t.pt[pillar];el.className='pillar-tag pt-'+pillar}
+function updateStreak(){const t=T[lang];const s=streak===1?'':'s';document.getElementById('streak-el').textContent=t.streak.replace('{n}',streak).replace('{s}',s)}
+function updateXP(){const lvl=Math.floor(xp/200)+1;const pct=((xp%200)/200)*100;document.getElementById('xp-bar').style.width=pct+'%';document.getElementById('xp-pts').textContent=`Niv.${lvl} · ${xp} XP`;if(userName){document.getElementById('xp-name').textContent=userName;document.getElementById('xp-av').textContent=userName[0].toUpperCase()}}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById('sc-'+id).classList.add('on');document.querySelectorAll('.nav-row').forEach(n=>n.classList.remove('active'));document.getElementById('nr-'+id)?.classList.add('active');if(id==='dash'){document.getElementById('nr-dash').classList.remove('has-pip');buildDash()}}
+function goOb(n){document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('on'));document.getElementById('ob'+n).classList.add('on');if(n===3)document.getElementById('ob3t').textContent=`C'est parti ${document.getElementById('ob-name').value.trim()} ! 🎉`}
+function checkName(){document.getElementById('ob1b').disabled=document.getElementById('ob-name').value.trim().length<2}
+function selPillar(p,el){selPillarOb=p;document.querySelectorAll('.ob-choice').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');document.getElementById('ob2b').disabled=false;visitedPillars.add(p)}
+function finishOb(){userName=document.getElementById('ob-name').value.trim()||'toi';pillar=selPillarOb||'job';xp=50;updateXP();updatePillarTag();document.getElementById('sc-ob').classList.remove('on');document.getElementById('sc-chat').classList.add('on');document.getElementById('nr-chat').classList.add('active');updateSuggs();const fm=T[lang].firstMsg[pillar](userName);appendMsg('b',fm);messages=[{role:'assistant',content:fm}]}
+function appendMsg(role,text){const el=document.getElementById('msgs');const d=document.createElement('div');d.className='msg msg-'+role;const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});if(role==='b'){d.innerHTML=`<div class="msg-row"><div class="bot-av">W↑</div><div class="bub bub-b">${text.replace(/\n/g,'<br>')}</div></div><span class="msg-meta">${now}</span>`}else{d.innerHTML=`<div class="bub bub-u">${text.replace(/\n/g,'<br>')}</div><span class="msg-meta">${now}</span>`}el.appendChild(d);el.scrollTop=el.scrollHeight}
+function showTyping(){const el=document.getElementById('msgs');const d=document.createElement('div');d.className='msg msg-b';d.id='typing-d';d.innerHTML=`<div class="msg-row"><div class="bot-av">W↑</div><div class="bub bub-b typing-bub"><span class="td"></span><span class="td"></span><span class="td"></span></div></div>`;el.appendChild(d);el.scrollTop=el.scrollHeight}
+function rmTyping(){const t=document.getElementById('typing-d');if(t)t.remove()}
+function updateSuggs(){const r=document.getElementById('sugg-row');if(!r)return;r.innerHTML=T[lang].sugg[pillar].map(s=>`<button class="sugg" onclick="useSugg('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('')}
+function useSugg(t){document.getElementById('msgIn').value=t;sendMsg()}
+async function sendMsg(){
+  const inp=document.getElementById('msgIn');const text=inp.value.trim();
+  if(!text||isLoading)return;
+  inp.value='';inp.style.height='auto';
+  appendMsg('u',text);messages.push({role:'user',content:text});
+  msgCount++;isLoading=true;document.getElementById('sendBtn').disabled=true;
+  document.getElementById('sugg-row').innerHTML='';showTyping();
+  if(!missions.first){missions.first=true;earnXP(20,'Premier message !');unlockBadge('first_msg')}
+  if(msgCount>=3&&!missions.three){missions.three=true;earnXP(30,'3 messages !')}
+  if(msgCount>=10&&!unlockedBadges.includes('motivated')){unlockBadge('motivated');earnXP(50,'Super motivé·e !')}
+  if(text.toLowerCase().includes('cv'))unlockBadge('cv_hero');
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:SYS[lang][pillar](),messages:messages.slice(-14)})});
+    const data=await r.json();rmTyping();
+    const reply=data.content?.[0]?.text||'Oups ! Réessaie 🙏';
+    appendMsg('b',reply);messages.push({role:'assistant',content:reply});xp+=10;updateXP();
+  }catch(e){rmTyping();appendMsg('b','Connexion perdue, réessaie !')}
+  isLoading=false;document.getElementById('sendBtn').disabled=false;updateSuggs();
+}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px'}
+function earnXP(amt,reason){xp+=amt;updateXP();showAch(T[lang].ach_xp,`+${amt} XP — ${reason}`)}
+function unlockBadge(id){if(unlockedBadges.includes(id))return;unlockedBadges.push(id);const b=BADGES.find(x=>x.id===id);if(b)showAch(T[lang].ach_badge,`${b.icon} ${b.name[lang]}`)}
+function showAch(t1,t2){const old=document.querySelector('.ach-pop');if(old)old.remove();const d=document.createElement('div');d.className='ach-pop';d.innerHTML=`<div class="ach-ico">⭐</div><div><div class="ach-t1">${t1}</div><div class="ach-t2">${t2}</div></div>`;document.body.appendChild(d);setTimeout(()=>{d.style.transition='opacity .4s';d.style.opacity='0';setTimeout(()=>d.remove(),400)},3000)}
+function rotatePillar(){const ps=['job','study','future'];pillar=ps[(ps.indexOf(pillar)+1)%3];visitedPillars.add(pillar);updatePillarTag();updateSuggs();if(visitedPillars.size>=3&&!unlockedBadges.includes('explorer')){unlockBadge('explorer');earnXP(40,'Explorateur !')};if(!missions.pillar){missions.pillar=true;earnXP(25,'Nouveau thème !')};showScreen('chat')}
+function buildDash(){
+  const t=T[lang];const lvl=Math.floor(xp/200)+1;
+  document.getElementById('stat-grid').innerHTML=t.stats.map((s,i)=>`<div class="stat-c"><div class="stat-ico">${s.i}</div><div class="stat-val">${[xp,streak,msgCount,lvl][i]}</div><div class="stat-lbl">${s.l}</div></div>`).join('');
+  document.getElementById('badges-wrap').innerHTML=BADGES.map(b=>`<div class="badge-c ${unlockedBadges.includes(b.id)?'':'locked'}"><div class="bi">${b.icon}</div><div class="bn">${b.name[lang]}</div></div>`).join('');
+  document.getElementById('missions-wrap').innerHTML=t.missions.map(m=>`<div class="mission-c ${missions[m.id]?'done':''}"><div class="mi-icon">${{first:'💬',three:'✏️',pillar:'🧭'}[m.id]}</div><div class="mi-title">${m.t}</div><div class="mi-xp">+${m.xp} XP</div><div class="mi-check">${missions[m.id]?'✓':''}</div></div>`).join('');
+  const topics=[{l:t.pt.job,pct:pillar==='job'?60:visitedPillars.has('job')?30:0,c:'var(--w)'},{l:t.pt.study,pct:pillar==='study'?60:visitedPillars.has('study')?30:0,c:'var(--w4)'},{l:t.pt.future,pct:pillar==='future'?60:visitedPillars.has('future')?30:0,c:'var(--w3)'}];
+  document.getElementById('prog-wrap').innerHTML=topics.map(tp=>`<div class="prog-item"><span class="prog-lbl">${tp.l}</span><div class="prog-bar"><div class="prog-fill" style="width:${tp.pct}%;background:${tp.c}"></div></div><span class="prog-pct">${tp.pct}%</span></div>`).join('');
+}
+updateStreak();missions.first=false;
+</script>
+</body>
+</html>
