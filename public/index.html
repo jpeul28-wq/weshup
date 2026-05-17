@@ -164,20 +164,81 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 .ach-t1{font-size:10px;color:var(--w2);font-weight:700;text-transform:uppercase;letter-spacing:.8px}
 .ach-t2{font-size:13px;font-weight:600}
 
-@media(max-width:600px){
-  #sidebar{width:0;padding:0;border:none}
-  #sidebar.open{width:200px;padding:14px 10px;border-right:1px solid var(--border)}
-  .topbar{padding:0 12px}
-  #msgs{padding:14px}
-  .input-zone{padding:10px 12px 14px}
-  .bub{max-width:85%}
+@media(max-width:768px){
+  /* SIDEBAR cachée par défaut sur mobile */
+  #sidebar{width:0;padding:0;border:none;overflow:hidden;position:fixed;z-index:100;height:100vh}
+  #sidebar.open{width:240px;padding:14px 10px;border-right:1px solid var(--border)}
+
+  /* MAIN prend tout l'écran */
+  #main{width:100%;min-width:0}
+
+  /* TOPBAR */
+  .topbar{padding:0 12px;height:48px;gap:8px}
+  .pillar-tag{font-size:10px;padding:3px 10px}
+  .streak{font-size:10px;padding:3px 8px}
+  .lpill{padding:4px 8px;font-size:11px}
+
+  /* MESSAGES */
+  #msgs{padding:12px}
+  .bub{max-width:88%;font-size:14px;line-height:1.6;padding:12px 14px}
+  .msg-meta{font-size:11px}
+  .bot-av{width:28px;height:28px;font-size:8px}
+
+  /* SUGGESTIONS */
+  .sugg-row{padding:6px 12px;gap:6px}
+  .sugg{font-size:12px;padding:7px 12px}
+
+  /* ZONE DE SAISIE — le point clé */
+  .input-zone{
+    padding:10px 12px 20px;
+    padding-bottom:max(20px, env(safe-area-inset-bottom));
+  }
+  .input-wrap{
+    gap:10px;
+    padding:10px 10px 10px 14px;
+    border-radius:16px;
+  }
+  #msgIn{
+    font-size:16px; /* évite le zoom auto iOS */
+    min-height:24px;
+  }
+  .send{
+    width:44px;
+    height:44px;
+    border-radius:12px;
+    font-size:18px;
+    flex-shrink:0; /* ne disparaît jamais */
+  }
+  .input-hint{display:none} /* masqué sur mobile */
+
+  /* ONBOARDING */
+  #sc-ob{padding:20px 16px}
+  .ob-big{font-size:32px}
+  .ob-title{font-size:18px}
+  .ob-sub{font-size:13px}
+  .ob-btn{font-size:15px;padding:14px}
+  .ob-input{font-size:16px} /* évite zoom iOS */
+  .ob-choice{padding:12px 14px}
+
+  /* DASHBOARD */
+  #sc-dash{padding:14px}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .stat-val{font-size:20px}
+
+  /* OVERLAY sidebar ouverte */
+  .sb-overlay{display:block}
 }
+
+/* Overlay sombre quand sidebar ouverte sur mobile */
+.sb-overlay{display:none;position:fixed;inset:0;background:#00000060;z-index:99}
+.sb-overlay.on{display:block}
 </style>
 </head>
 <body>
 <div class="glow g1"></div>
 <div class="glow g2"></div>
 <div class="glow g3"></div>
+<div class="sb-overlay" id="sb-overlay" onclick="toggleSb()"></div>
 
 <div id="app">
   <div id="sidebar">
@@ -356,7 +417,7 @@ const SYS={
   }
 };
 
-function toggleSb(){sbOpen=!sbOpen;document.getElementById('sidebar').classList.toggle('open',sbOpen)}
+function toggleSb(){sbOpen=!sbOpen;document.getElementById('sidebar').classList.toggle('open',sbOpen);document.getElementById('sb-overlay').classList.toggle('on',sbOpen)}
 function setLang(l){lang=l;document.querySelectorAll('.lpill').forEach((b,i)=>b.classList.toggle('active',(i===0&&l==='fr')||(i===1&&l==='en')));updatePillarTag();updateStreak();updateSuggs()}
 function updatePillarTag(){const t=T[lang];const el=document.getElementById('ptag');el.textContent=t.pt[pillar];el.className='pillar-tag pt-'+pillar}
 function updateStreak(){const t=T[lang];const s=streak===1?'':'s';document.getElementById('streak-el').textContent=t.streak.replace('{n}',streak).replace('{s}',s)}
