@@ -20,12 +20,12 @@ input,textarea,select{font-size:16px !important;touch-action:manipulation}
   --text:#F5F4FF;--muted:#7B7A9A;--soft:#C4C3DC;
   --r:14px;
 }
-body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;height:100vh;height:100dvh;overflow:hidden;position:fixed;width:100%;max-width:100vw}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;height:var(--vh,100vh);overflow:hidden;position:fixed;width:100%;max-width:100vw}
 .glow{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;opacity:.08}
 .g1{width:500px;height:500px;background:var(--w);top:-150px;left:-100px}
 .g2{width:350px;height:350px;background:var(--w4);bottom:-100px;right:-80px}
 .g3{width:200px;height:200px;background:var(--w3);top:40%;left:30%;opacity:.05}
-#app{display:flex;height:100vh;height:100dvh;position:relative;z-index:1;overflow:hidden;width:100%}
+#app{display:flex;height:var(--vh,100vh);position:relative;z-index:1;overflow:hidden;width:100%}
 
 /* SIDEBAR */
 #sidebar{width:68px;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:4px;flex-shrink:0;transition:width .3s cubic-bezier(.4,0,.2,1)}
@@ -473,6 +473,12 @@ function buildDash(){
   document.getElementById('prog-wrap').innerHTML=topics.map(tp=>`<div class="prog-item"><span class="prog-lbl">${tp.l}</span><div class="prog-bar"><div class="prog-fill" style="width:${tp.pct}%;background:${tp.c}"></div></div><span class="prog-pct">${tp.pct}%</span></div>`).join('');
 }
 updateStreak();missions.first=false;
+
+// VIEWPORT FIX — Android & iOS barre navigateur
+function setVh(){document.documentElement.style.setProperty('--vh',window.innerHeight+'px')}
+setVh();
+window.addEventListener('resize',setVh);
+window.addEventListener('orientationchange',()=>setTimeout(setVh,300));
 </script>
 </body>
 </html>
