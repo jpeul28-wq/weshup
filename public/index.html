@@ -122,7 +122,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 .sugg-row{padding:8px 20px;display:flex;gap:7px;flex-wrap:wrap;flex-shrink:0}
 .sugg{padding:6px 13px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap}
 .sugg:hover{border-color:var(--w);color:var(--w);background:#2A150520}
-.input-zone{padding:12px 18px 16px;border-top:1px solid var(--border);flex-shrink:0;width:100%;box-sizing:border-box}
+.input-zone{padding:12px 18px 16px;border-top:1px solid var(--border);flex-shrink:0;width:100%;box-sizing:border-box;transition:transform .1s ease-out}
 .input-wrap{display:flex;gap:8px;align-items:flex-end;background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:9px 9px 9px 14px;transition:border-color .2s;width:100%;box-sizing:border-box;overflow:hidden}
 .input-wrap:focus-within{border-color:var(--w)}
 #msgIn{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:13px;font-family:'Space Grotesk',sans-serif;resize:none;max-height:100px;line-height:1.5}
@@ -474,11 +474,23 @@ function buildDash(){
 }
 updateStreak();missions.first=false;
 
-// VIEWPORT FIX — Android & iOS barre navigateur
+// VIEWPORT FIX — Android & iOS barre navigateur + clavier
 function setVh(){document.documentElement.style.setProperty('--vh',window.innerHeight+'px')}
 setVh();
 window.addEventListener('resize',setVh);
 window.addEventListener('orientationchange',()=>setTimeout(setVh,300));
+
+// FIX clavier iOS — déplace la zone input au-dessus du clavier
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',()=>{
+    const inputZone=document.querySelector('.input-zone');
+    if(inputZone){
+      const offset=window.innerHeight-window.visualViewport.height;
+      inputZone.style.transform=`translateY(-${offset}px)`;
+    }
+    document.documentElement.style.setProperty('--vh',window.visualViewport.height+'px');
+  });
+}
 </script>
 </body>
 </html>
